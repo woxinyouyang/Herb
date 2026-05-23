@@ -11,6 +11,11 @@ on:
       - 'herbs.json'
       - 'images/**'
 
+# 限制并发，节约 Actions 时间
+concurrency:
+  group: apk-build-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,10 +26,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Set up Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
+          cache-dependency-path: mobile/package-lock.json
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -35,6 +42,11 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Accept Android SDK licenses
+        run: |
+          yes | $ANDROID_HOME/tools/bin/sdkmanager --licenses >/dev/null 2>&1 || true
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses >/dev/null 2>&1 || true
+
       - name: Install dependencies
         run: npm ci
 
@@ -44,15 +56,21 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
-      - name: Build APK
+      - name: Build debug APK
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Rename APK with version info
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk \
+             android/app/build/outputs/apk/debug/草药名录-v1.0.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: herb-directory-apk
+          name: 草药名录-APK
           path: mobile/android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
+          compression-level: 0  # APK 已经是压缩的

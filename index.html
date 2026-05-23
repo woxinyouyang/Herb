@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#8B1A1A">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -60,7 +60,7 @@ body::before {
   font-family: inherit;
   color: #D4A574;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s, transform 0.3s ease, opacity 0.3s ease;
   vertical-align: middle;
 }
 .random-btn:hover {
@@ -680,7 +680,7 @@ body::before {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ========== RESPONSIVE ========== */
+/* ========== RESPONSIVE - TABLET ========== */
 @media (max-width: 900px) {
   .main-layout { flex-direction: column; padding: 1rem; }
   .sidebar {
@@ -692,19 +692,246 @@ body::before {
     gap: 0.3rem;
   }
   .category-group { flex: 1; min-width: 120px; }
+  .header { padding: 1.5rem 1rem 1.2rem; }
   .header h1 { font-size: 1.6rem; letter-spacing: 3px; }
   .search-section { padding: 0.8rem 1rem; }
   .search-wrapper { flex-direction: column; align-items: stretch; }
   .filters { justify-content: center; }
-  .herb-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+  .herb-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.8rem; }
   .modal-body { padding: 1.2rem; }
   .modal-title { font-size: 1.5rem; }
   .modal-img, .modal-img-placeholder { height: 220px; }
-  .info-grid { grid-template-columns: repeat(2, 1fr); }
+  .info-grid { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
+  .back-to-top { bottom: 1rem; right: 1rem; width: 40px; height: 40px; }
 }
-@media (max-width: 480px) {
-  .herb-grid { grid-template-columns: 1fr; }
-  .header h1 { font-size: 1.3rem; }
+
+/* ========== RESPONSIVE - MOBILE ========== */
+@media (max-width: 640px) {
+  /* ---- Safe area insets for notched phones ---- */
+  .header {
+    padding: calc(1.2rem + env(safe-area-inset-top, 0px)) 1rem 1rem;
+  }
+  .search-section {
+    padding-top: calc(0.6rem + env(safe-area-inset-top, 0px));
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .footer {
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  }
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+  .modal {
+    max-width: 100%;
+    max-height: 92vh;
+    border-radius: 16px 16px 0 0;
+    animation: modalSlideUp 0.35s ease-out;
+  }
+  @keyframes modalSlideUp {
+    from { transform: translateY(100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .modal-body { padding: 1rem 1.2rem calc(1.2rem + env(safe-area-inset-bottom, 0px)); }
+  .modal-close { top: 0.6rem; right: 0.6rem; }
+  .modal-img, .modal-img-placeholder { height: 200px; border-radius: 16px 16px 0 0; }
+  .modal-title { font-size: 1.3rem; }
+  .modal-pinyin { font-size: 0.85rem; }
+  /* Drag handle for bottom sheet */
+  .modal::before {
+    content: '';
+    display: block;
+    width: 36px; height: 4px;
+    border-radius: 2px;
+    background: #D4C5B0;
+    margin: 8px auto 0;
+    position: relative;
+    z-index: 10;
+  }
+
+  /* ---- Header ---- */
+  .header h1 { font-size: 1.2rem; letter-spacing: 2px; }
+  .header .subtitle { font-size: 0.75rem; letter-spacing: 2px; }
+  .header .count-badge { font-size: 0.7rem; margin-top: 0.4rem; }
+  .random-btn {
+    position: fixed;
+    bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+    right: 1rem;
+    z-index: 99;
+    margin: 0;
+    padding: 0.6rem 1rem;
+    border-radius: 24px;
+    background: #8B1A1A;
+    color: #FFFCF7;
+    border: none;
+    font-size: 0.85rem;
+    box-shadow: 0 4px 16px rgba(139, 26, 26, 0.35);
+    white-space: nowrap;
+  }
+  .random-btn:hover {
+    background: #A52222;
+    transform: scale(1.05);
+  }
+
+  /* ---- Search ---- */
+  .search-section { padding: 0.6rem 0.8rem; }
+  .search-box input {
+    padding: 0.65rem 1rem 0.65rem 2.2rem;
+    font-size: 16px; /* prevent iOS zoom on focus */
+    border-radius: 10px;
+  }
+  .search-box .icon { left: 0.7rem; font-size: 0.9rem; }
+
+  /* ---- Filters: horizontal scroll --- */
+  .filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    gap: 0.5rem;
+    padding: 0.3rem 0 0.5rem;
+    justify-content: flex-start;
+  }
+  .filters::-webkit-scrollbar { display: none; }
+  .filter-group { flex-shrink: 0; scroll-snap-align: start; }
+  .filter-label { font-size: 0.7rem; }
+  .filter-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+    min-height: 36px;
+  }
+  .reset-btn {
+    flex-shrink: 0;
+    scroll-snap-align: start;
+    min-height: 36px;
+    padding: 0.4rem 0.8rem;
+  }
+  .nature-legend {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.65rem;
+    gap: 0.5rem;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
+
+  /* ---- Sidebar becomes bottom drawer / collapsible panel ---- */
+  .sidebar {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: 0.3rem;
+    padding: 0.5rem 0;
+    scroll-snap-type: x mandatory;
+  }
+  .sidebar::-webkit-scrollbar { display: none; }
+  .category-group {
+    flex: 0 0 auto;
+    min-width: auto;
+  }
+  .category-header {
+    white-space: nowrap;
+    font-size: 0.75rem;
+    padding: 0.4rem 0.7rem;
+    border: 1px solid #E8DDD0;
+    border-radius: 20px;
+    min-height: 36px;
+  }
+  .category-header .arrow { display: none; }
+  .category-header .count { display: none; }
+  .subcategories { display: none !important; }
+
+  /* ---- Herb grid ---- */
+  .herb-grid { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
+  .herb-card { border-radius: 10px; }
+  .herb-card .card-img { height: 130px; }
+  .herb-card .card-img-placeholder { height: 130px; font-size: 1.8rem; }
+  .herb-card .card-body { padding: 0.6rem 0.7rem 0.7rem; }
+  .herb-card .card-name { font-size: 0.95rem; }
+  .herb-card .card-pinyin { font-size: 0.65rem; }
+  .herb-card .card-latin { font-size: 0.6rem; margin-bottom: 0.2rem; }
+  .herb-card .tag { font-size: 0.6rem; padding: 0.05rem 0.4rem; }
+  .herb-card .card-effect { font-size: 0.72rem; -webkit-line-clamp: 2; }
+  .herb-card .card-flavor { font-size: 0.65rem; }
+
+  /* ---- Info grid compact ---- */
+  .info-item { padding: 0.5rem 0.7rem; }
+  .info-item .value { font-size: 0.82rem; }
+  .detail-section h3 { font-size: 0.9rem; }
+  .detail-section p, .detail-section ul { font-size: 0.82rem; }
+
+  /* ---- Footer ---- */
+  .footer {
+    padding: 1rem;
+    font-size: 0.65rem;
+    margin-top: 1rem;
+  }
+
+  /* ---- Back to top ---- */
+  .back-to-top {
+    bottom: 4rem;
+    right: 1rem;
+    width: 40px; height: 40px;
+  }
+
+  /* ---- Results stats ---- */
+  .results-stats { font-size: 0.75rem; margin-bottom: 0.6rem; }
+
+  /* ---- Loading ---- */
+  .loading { padding: 3rem 1rem; }
+
+  /* ---- Empty state ---- */
+  .empty-state { padding: 3rem 1rem; }
+  .empty-state .icon { font-size: 2.5rem; }
+  .empty-state h3 { font-size: 1rem; }
+}
+
+/* ========== RESPONSIVE - SMALL PHONES ========== */
+@media (max-width: 380px) {
+  .herb-grid { grid-template-columns: 1fr; gap: 0.5rem; }
+  .header h1 { font-size: 1rem; }
+  .header { padding-top: calc(1rem + env(safe-area-inset-top, 0px)); }
+  .modal-img, .modal-img-placeholder { height: 160px; }
+}
+
+/* ========== TOUCH OPTIMIZATIONS ========== */
+@media (hover: none) and (pointer: coarse) {
+  .herb-card:hover {
+    transform: none;
+    box-shadow: 0 2px 8px rgba(60, 36, 21, 0.08);
+  }
+  .herb-card:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+  .filter-btn:hover {
+    background: transparent;
+    border-color: #E8DDD0;
+    color: #5C4A3A;
+  }
+  .filter-btn:active {
+    opacity: 0.7;
+  }
+  .back-to-top:hover {
+    background: #FFFCF7;
+    color: #8B7355;
+    border-color: #E8DDD0;
+  }
+  .modal-close:hover {
+    background: rgba(60, 36, 21, 0.1);
+    color: #5C4A3A;
+  }
+}
+
+/* ========== DARK MODE - MOBILE SAFE AREA ========== */
+@media (prefers-color-scheme: dark) {
+  .random-btn {
+    box-shadow: 0 4px 16px rgba(139, 26, 26, 0.5);
+  }
 }
 </style>
 </head>
@@ -1115,15 +1342,29 @@ document.addEventListener('keydown', e => {
 // HEADER COUNT
 // ============================================================
 // ============================================================
-// BACK TO TOP
+// BACK TO TOP + FLOATING RANDOM BTN BEHAVIOR
 // ============================================================
 const backToTop = document.getElementById('backToTop');
+const randomBtn = document.getElementById('randomBtn');
+let lastScrollY = 0;
 window.addEventListener('scroll', function() {
-  if (window.scrollY > 400) {
+  const currentScrollY = window.scrollY;
+  if (currentScrollY > 400) {
     backToTop.classList.add('visible');
   } else {
     backToTop.classList.remove('visible');
   }
+  // Hide floating random button when scrolling down on mobile
+  if (window.innerWidth <= 640) {
+    if (currentScrollY > lastScrollY && currentScrollY > 200) {
+      randomBtn.style.transform = 'translateY(80px)';
+      randomBtn.style.opacity = '0';
+    } else {
+      randomBtn.style.transform = 'translateY(0)';
+      randomBtn.style.opacity = '1';
+    }
+  }
+  lastScrollY = currentScrollY;
 });
 backToTop.addEventListener('click', function() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1136,6 +1377,73 @@ document.getElementById('randomBtn').addEventListener('click', function() {
   if (allHerbs.length === 0) return;
   const randomHerb = allHerbs[Math.floor(Math.random() * allHerbs.length)];
   openDetail(randomHerb.id || randomHerb.name);
+});
+
+// ============================================================
+// MOBILE TOUCH - swipe down to close modal
+// ============================================================
+(function() {
+  let touchStartY = 0;
+  let touchCurrentY = 0;
+  let isDragging = false;
+  const modal = document.getElementById('modal');
+  const overlay = document.getElementById('modalOverlay');
+
+  overlay.addEventListener('touchstart', function(e) {
+    if (e.target.closest('.modal')) {
+      const modalRect = modal.getBoundingClientRect();
+      if (e.touches[0].clientY - modalRect.top < 40) {
+        touchStartY = e.touches[0].clientY;
+        isDragging = true;
+        modal.style.transition = 'none';
+      }
+    }
+  }, { passive: true });
+
+  overlay.addEventListener('touchmove', function(e) {
+    if (!isDragging) return;
+    touchCurrentY = e.touches[0].clientY;
+    const delta = touchCurrentY - touchStartY;
+    if (delta > 0) {
+      modal.style.transform = `translateY(${delta}px)`;
+      overlay.style.background = `rgba(60, 36, 21, ${Math.max(0, 0.6 - delta / 1000)})`;
+    }
+  }, { passive: true });
+
+  overlay.addEventListener('touchend', function() {
+    if (!isDragging) return;
+    isDragging = false;
+    modal.style.transition = '';
+    modal.style.transform = '';
+    overlay.style.background = '';
+    const delta = touchCurrentY - touchStartY;
+    if (delta > 100) {
+      closeDetail();
+    }
+  }, { passive: true });
+})();
+
+// ============================================================
+// CAPACITOR - Android back button
+// ============================================================
+document.addEventListener('backbutton', function(e) {
+  const overlay = document.getElementById('modalOverlay');
+  if (overlay.classList.contains('open')) {
+    e.preventDefault();
+    closeDetail();
+  }
+}, false);
+
+// Also handle in case Capacitor bridge is available
+window.addEventListener('load', function() {
+  if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
+    window.Capacitor.Plugins.App.addListener('backButton', function() {
+      const overlay = document.getElementById('modalOverlay');
+      if (overlay.classList.contains('open')) {
+        closeDetail();
+      }
+    });
+  }
 });
 
 // ============================================================
