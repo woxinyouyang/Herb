@@ -1,0 +1,19 @@
+# Node
+node_modules/
+npm-debug.log*
+
+# Android
+mobile/android/.gradle/
+mobile/android/build/
+mobile/android/app/build/
+mobile/android/local.properties
+*.iml
+.idea/
+
+# Windows
+Thumbs.db
+
+# Generated
+mobile/www/
+*.pyc
+__pycache__/

@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#8B1A1A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>动态中国草药名录</title>
+<style>
+/* ========== RESET & BASE ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: 'Noto Serif SC', 'SimSun', 'STSong', 'Source Han Serif SC', serif;
+  background: #F5F0E8;
+  color: #3C2415;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+a { color: #8B1A1A; text-decoration: none; }
+a:hover { color: #C41E3A; }
+
+/* ========== FONTS ========== */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&display=swap');
+
+/* ========== DECORATIVE BG ========== */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(139, 26, 26, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 50%, rgba(47, 79, 47, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ========== HEADER ========== */
+.header {
+  background: linear-gradient(135deg, #3C2415 0%, #5C3A28 40%, #2F4F2F 100%);
+  color: #F5F0E8;
+  padding: 2rem 1.5rem 1.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(60, 36, 21, 0.3);
+}
+.random-btn {
+  display: inline-block;
+  margin-top: 0.6rem;
+  margin-left: 0.8rem;
+  padding: 0.3rem 1rem;
+  border: 1px solid rgba(212, 165, 116, 0.5);
+  border-radius: 20px;
+  background: rgba(212, 165, 116, 0.1);
+  font-size: 0.85rem;
+  font-family: inherit;
+  color: #D4A574;
+  cursor: pointer;
+  transition: all 0.3s;
+  vertical-align: middle;
+}
+.random-btn:hover {
+  background: rgba(212, 165, 116, 0.25);
+  border-color: #D4A574;
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(212, 165, 116, 0.2);
+}
+.header::before {
+  content: '● ● ●';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  letter-spacing: 12px;
+  font-size: 0.6rem;
+  color: rgba(212, 165, 116, 0.3);
+}
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #D4A574, transparent);
+}
+.header h1 {
+  font-size: 2.2rem;
+  font-weight: 900;
+  letter-spacing: 6px;
+  color: #F5F0E8;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  margin-bottom: 0.3rem;
+}
+.header .subtitle {
+  font-size: 0.9rem;
+  color: #D4A574;
+  letter-spacing: 4px;
+  font-weight: 400;
+  opacity: 0.8;
+}
+.header .count-badge {
+  display: inline-block;
+  margin-top: 0.6rem;
+  padding: 0.2rem 1rem;
+  border: 1px solid rgba(212, 165, 116, 0.4);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  color: #D4A574;
+  letter-spacing: 1px;
+}
+
+/* ========== SEARCH BAR ========== */
+.search-section {
+  background: #FFFCF7;
+  border-bottom: 1px solid #E8DDD0;
+  padding: 1rem 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(60, 36, 21, 0.08);
+}
+.search-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.search-box {
+  flex: 1 1 300px;
+  position: relative;
+}
+.search-box input {
+  width: 100%;
+  padding: 0.7rem 1rem 0.7rem 2.5rem;
+  border: 2px solid #E8DDD0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: #FFFCF7;
+  color: #3C2415;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.search-box input:focus {
+  outline: none;
+  border-color: #8B1A1A;
+  box-shadow: 0 0 0 3px rgba(139, 26, 26, 0.1);
+}
+.search-box input::placeholder { color: #B8A89A; }
+.search-box .icon {
+  position: absolute;
+  left: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #B8A89A;
+  font-size: 1rem;
+}
+.search-clear {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #B8A89A;
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0.2rem;
+  display: none;
+}
+.search-clear.visible { display: block; }
+.search-clear:hover { color: #8B1A1A; }
+
+/* ========== FILTERS ========== */
+.filters {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.filter-group {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.filter-label {
+  font-size: 0.78rem;
+  color: #8B7355;
+  letter-spacing: 1px;
+  margin-right: 0.3rem;
+}
+.filter-btn {
+  padding: 0.3rem 0.7rem;
+  border: 1px solid #E8DDD0;
+  border-radius: 16px;
+  background: transparent;
+  font-size: 0.78rem;
+  font-family: inherit;
+  color: #5C4A3A;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.filter-btn:hover {
+  border-color: #D4A574;
+  color: #8B1A1A;
+  background: #FFF8F0;
+}
+.filter-btn.active {
+  background: #8B1A1A;
+  color: #FFFCF7;
+  border-color: #8B1A1A;
+}
+.filter-btn.nature-cold.active { background: #4A7BB5; border-color: #4A7BB5; }
+.filter-btn.nature-cold:hover { border-color: #4A7BB5; color: #4A7BB5; }
+.filter-btn.nature-hot.active { background: #C41E3A; border-color: #C41E3A; }
+.filter-btn.nature-hot:hover { border-color: #C41E3A; color: #C41E3A; }
+.filter-btn.nature-warm.active { background: #D4875E; border-color: #D4875E; }
+.filter-btn.nature-warm:hover { border-color: #D4875E; color: #D4875E; }
+.filter-btn.nature-cool.active { background: #5E9B8A; border-color: #5E9B8A; }
+.filter-btn.nature-cool:hover { border-color: #5E9B8A; color: #5E9B8A; }
+.filter-btn.nature-neutral.active { background: #8B7355; border-color: #8B7355; }
+.filter-btn.nature-neutral:hover { border-color: #8B7355; color: #8B7355; }
+.reset-btn {
+  padding: 0.3rem 0.8rem;
+  border: 1px dashed #D4C5B0;
+  border-radius: 16px;
+  background: transparent;
+  font-size: 0.75rem;
+  font-family: inherit;
+  color: #B8A89A;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.reset-btn:hover {
+  border-color: #8B1A1A;
+  color: #8B1A1A;
+  border-style: solid;
+}
+
+/* ========== NATURE LEGEND ========== */
+.nature-legend {
+  display: flex;
+  gap: 1rem;
+  padding: 0.5rem 1.5rem;
+  background: #FFFCF7;
+  border-bottom: 1px solid #F0E8DD;
+  font-size: 0.75rem;
+  color: #8B7355;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.nature-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+
+/* ========== MAIN LAYOUT ========== */
+.main-layout {
+  display: flex;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  gap: 1.5rem;
+  position: relative;
+  z-index: 1;
+  min-height: 60vh;
+}
+.sidebar {
+  flex: 0 0 220px;
+  position: sticky;
+  top: 80px;
+  align-self: flex-start;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+.category-group {
+  margin-bottom: 0.5rem;
+}
+.category-header {
+  padding: 0.5rem 0.8rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #5C4A3A;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.2s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+.category-header:hover { background: #F0E8DD; }
+.category-header .count {
+  font-weight: 400;
+  font-size: 0.7rem;
+  color: #B8A89A;
+}
+.category-header .arrow {
+  transition: transform 0.2s;
+  font-size: 0.7rem;
+}
+.category-header .arrow.open { transform: rotate(90deg); }
+.subcategories { padding-left: 0.5rem; }
+.subcat-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.3rem 0.8rem;
+  border: none;
+  background: none;
+  font-size: 0.78rem;
+  font-family: inherit;
+  color: #8B7355;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+.subcat-btn:hover { background: #F0E8DD; color: #5C4A3A; }
+.subcat-btn.active { background: #FFF0E0; color: #8B1A1A; font-weight: 600; }
+
+/* ========== CONTENT AREA ========== */
+.content-area { flex: 1; min-width: 0; }
+
+/* ========== RESULTS STATS ========== */
+.results-stats {
+  font-size: 0.85rem;
+  color: #8B7355;
+  margin-bottom: 1rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid #E8DDD0;
+}
+.results-stats strong { color: #5C4A3A; }
+
+/* ========== HERB GRID ========== */
+.herb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.2rem;
+}
+
+/* ========== HERB CARD ========== */
+.herb-card {
+  background: #FFFCF7;
+  border: 1px solid #E8DDD0;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  position: relative;
+}
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.herb-card {
+  animation: cardIn 0.4s ease-out both;
+}
+.herb-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(60, 36, 21, 0.12);
+}
+.herb-card .card-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+  background: #F8F4EE;
+}
+.herb-card .card-img-placeholder {
+  width: 100%;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #F8F4EE, #F0E8DD);
+  color: #D4C5B0;
+  font-size: 2.5rem;
+}
+.herb-card .card-body {
+  padding: 0.9rem 1rem 1rem;
+}
+.herb-card .card-name-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+.herb-card .card-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #3C2415;
+}
+.herb-card .card-pinyin {
+  font-size: 0.75rem;
+  color: #B8A89A;
+  font-style: italic;
+}
+.herb-card .card-latin {
+  font-size: 0.72rem;
+  color: #B8A89A;
+  font-style: italic;
+  margin-bottom: 0.4rem;
+}
+.herb-card .card-tags {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.4rem;
+}
+.herb-card .tag {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: 10px;
+  font-size: 0.68rem;
+}
+.herb-card .tag-nature {
+  background: #F0E8DD;
+  color: #5C4A3A;
+}
+.herb-card .tag-nature-cold { background: #E8F0F8; color: #3A6A8B; }
+.herb-card .tag-nature-hot { background: #FCE8E8; color: #B83A3A; }
+.herb-card .tag-nature-warm { background: #FCF0E8; color: #B87A3A; }
+.herb-card .tag-nature-cool { background: #E8F5F0; color: #3A8B6A; }
+.herb-card .tag-nature-neutral { background: #F0ECE8; color: #7A6A5A; }
+.herb-card .tag-effect {
+  background: #FFF0E0;
+  color: #8B5A3A;
+}
+.herb-card .card-effect {
+  font-size: 0.8rem;
+  color: #5C4A3A;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.herb-card .card-flavor {
+  font-size: 0.72rem;
+  color: #B8A89A;
+  margin-top: 0.3rem;
+}
+
+/* ========== DETAIL MODAL ========== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(60, 36, 21, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: #FFFCF7;
+  border-radius: 16px;
+  max-width: 860px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  animation: modalIn 0.3s ease-out;
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(60, 36, 21, 0.1);
+  color: #5C4A3A;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+.modal-close:hover { background: #8B1A1A; color: white; }
+.modal-img {
+  width: 100%;
+  height: 340px;
+  object-fit: cover;
+  display: block;
+  background: #F8F4EE;
+  border-radius: 16px 16px 0 0;
+}
+.modal-img-placeholder {
+  width: 100%;
+  height: 340px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #F8F4EE, #F0E8DD);
+  border-radius: 16px 16px 0 0;
+  font-size: 4rem;
+  color: #D4C5B0;
+}
+.modal-body { padding: 1.5rem 2rem 2rem; }
+.modal-header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+.modal-title {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #3C2415;
+}
+.modal-pinyin {
+  font-size: 1rem;
+  color: #B8A89A;
+  font-style: italic;
+}
+.modal-latin {
+  font-size: 0.88rem;
+  color: #B8A89A;
+  font-style: italic;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #F0E8DD;
+  padding-bottom: 0.8rem;
+}
+
+/* ========== DETAIL INFO GRID ========== */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.info-item {
+  background: #F8F4EE;
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+}
+.info-item .label {
+  font-size: 0.72rem;
+  color: #B8A89A;
+  letter-spacing: 1px;
+  margin-bottom: 0.2rem;
+}
+.info-item .value {
+  font-size: 0.92rem;
+  color: #3C2415;
+  font-weight: 600;
+}
+.info-item .value.nature-cold { color: #4A7BB5; }
+.info-item .value.nature-hot { color: #C41E3A; }
+.info-item .value.nature-warm { color: #D4875E; }
+.info-item .value.nature-cool { color: #5E9B8A; }
+.info-item .value.nature-neutral { color: #8B7355; }
+
+/* ========== DETAIL SECTIONS ========== */
+.detail-section {
+  margin-top: 1.2rem;
+}
+.detail-section h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #8B1A1A;
+  margin-bottom: 0.5rem;
+  padding-left: 0.6rem;
+  border-left: 3px solid #8B1A1A;
+}
+.detail-section p, .detail-section ul {
+  font-size: 0.9rem;
+  color: #4A3A2A;
+  line-height: 1.8;
+}
+.detail-section ul {
+  list-style: none;
+  padding-left: 0;
+}
+.detail-section li {
+  padding: 0.2rem 0;
+  padding-left: 1.2rem;
+  position: relative;
+}
+.detail-section li::before {
+  content: '◆';
+  position: absolute;
+  left: 0;
+  color: #D4A574;
+  font-size: 0.5rem;
+  top: 0.5rem;
+}
+
+/* ========== EMPTY STATE ========== */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #B8A89A;
+}
+.empty-state .icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.5; }
+.empty-state h3 { font-size: 1.1rem; color: #8B7355; margin-bottom: 0.5rem; }
+.empty-state p { font-size: 0.88rem; }
+
+/* ========== FOOTER ========== */
+.footer {
+  text-align: center;
+  padding: 2rem;
+  color: #B8A89A;
+  font-size: 0.78rem;
+  border-top: 1px solid #E8DDD0;
+  margin-top: 2rem;
+}
+
+/* ========== BACK TO TOP ========== */
+.back-to-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 1px solid #E8DDD0;
+  background: #FFFCF7;
+  color: #8B7355;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 2px 12px rgba(60, 36, 21, 0.1);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  opacity: 0;
+  transform: translateY(10px);
+}
+.back-to-top.visible {
+  display: flex;
+  opacity: 1;
+  transform: translateY(0);
+}
+.back-to-top:hover {
+  background: #8B1A1A;
+  color: white;
+  border-color: #8B1A1A;
+  box-shadow: 0 4px 16px rgba(139, 26, 26, 0.2);
+}
+
+/* ========== SCROLLBAR ========== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #D4C5B0; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #B8A89A; }
+
+/* ========== LOADING ========== */
+.loading {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #8B7355;
+}
+.loading .spinner {
+  display: inline-block;
+  width: 32px; height: 32px;
+  border: 3px solid #F0E8DD;
+  border-top-color: #8B1A1A;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 1rem;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 900px) {
+  .main-layout { flex-direction: column; padding: 1rem; }
+  .sidebar {
+    position: static;
+    flex: none;
+    max-height: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+  .category-group { flex: 1; min-width: 120px; }
+  .header h1 { font-size: 1.6rem; letter-spacing: 3px; }
+  .search-section { padding: 0.8rem 1rem; }
+  .search-wrapper { flex-direction: column; align-items: stretch; }
+  .filters { justify-content: center; }
+  .herb-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+  .modal-body { padding: 1.2rem; }
+  .modal-title { font-size: 1.5rem; }
+  .modal-img, .modal-img-placeholder { height: 220px; }
+  .info-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .herb-grid { grid-template-columns: 1fr; }
+  .header h1 { font-size: 1.3rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ========== HEADER ========== -->
+<header class="header">
+  <h1>动态中国草药名录</h1>
+  <div class="subtitle">— 本草纲目 · 现代编 —</div>
+  <div class="count-badge" id="headerCount">载录中⋯味</div>
+<button class="random-btn" id="randomBtn" title="随机一味草药">🎲 随机一味</button>
+</header>
+
+<!-- ========== SEARCH + FILTERS ========== -->
+<section class="search-section">
+  <div class="search-wrapper">
+    <div class="search-box">
+      <span class="icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="搜索草药名称、功效、主治⋯" autocomplete="off">
+      <button class="search-clear" id="searchClear">✕</button>
+    </div>
+    <div class="filters">
+      <div class="filter-group">
+        <span class="filter-label">药性</span>
+        <button class="filter-btn nature-cold" data-filter="nature" data-value="寒">寒</button>
+        <button class="filter-btn nature-hot" data-filter="nature" data-value="热">热</button>
+        <button class="filter-btn nature-warm" data-filter="nature" data-value="温">温</button>
+        <button class="filter-btn nature-cool" data-filter="nature" data-value="凉">凉</button>
+        <button class="filter-btn nature-neutral" data-filter="nature" data-value="平">平</button>
+      </div>
+      <button class="reset-btn" id="resetFilters">重置筛选</button>
+    </div>
+  </div>
+</section>
+
+<!-- ========== NATURE LEGEND ========== -->
+<div class="nature-legend">
+  <span><span class="nature-dot" style="background:#4A7BB5"></span>寒</span>
+  <span><span class="nature-dot" style="background:#C41E3A"></span>热</span>
+  <span><span class="nature-dot" style="background:#D4875E"></span>温</span>
+  <span><span class="nature-dot" style="background:#5E9B8A"></span>凉</span>
+  <span><span class="nature-dot" style="background:#8B7355"></span>平</span>
+  <span style="margin-left:1rem;color:#B8A89A;">｜点击卡片查看详情</span>
+</div>
+
+<!-- ========== MAIN LAYOUT ========== -->
+<div class="main-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar"></aside>
+  <!-- Content -->
+  <main class="content-area">
+    <div class="results-stats" id="resultsStats"></div>
+    <div id="herbGrid" class="herb-grid"></div>
+  </main>
+</div>
+
+<!-- ========== DETAIL MODAL ========== -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modal">
+    <button class="modal-close" id="modalClose">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<!-- ========== BACK TO TOP ========== -->
+<button class="back-to-top" id="backToTop" title="返回顶部">↑</button>
+
+<!-- ========== FOOTER ========== -->
+<footer class="footer">
+  动态中国草药名录 · 都米数字员工团队编纂 · 内容仅供学习参考
+</footer>
+
+<!-- ========== JAVASCRIPT ========== -->
+<script>
+// ============================================================
+// HERB DATA (loaded from herbs.json)
+// ============================================================
+let allHerbs = [];
+let effectCategories = {};
+
+// ============================================================
+// STATE
+// ============================================================
+const state = {
+  herbs: [],
+  search: '',
+  natureFilter: '',
+  categoryFilter: '',
+  subcategoryFilter: ''
+};
+
+// ============================================================
+// LOAD DATA
+// ============================================================
+async function loadData() {
+  const grid = document.getElementById('herbGrid');
+  grid.innerHTML = '<div class="loading"><div class="spinner"></div><p>正在载录本草⋯</p></div>';
+
+  try {
+    const resp = await fetch('herbs.json');
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    allHerbs = data.herbs || [];
+    effectCategories = data.categories || {};
+    buildSidebar();
+    applyFilters();
+    updateHeaderCount();
+  } catch (e) {
+    console.error('Failed to load herbs.json, using embedded data.', e);
+    // Fallback: use minimal embedded data
+    allHerbs = getEmbeddedHerbs();
+    effectCategories = getEmbeddedCategories();
+    buildSidebar();
+    applyFilters();
+    updateHeaderCount();
+  }
+}
+
+// ============================================================
+// BUILD SIDEBAR
+// ============================================================
+function buildSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  let html = '';
+  for (const [catName, cat] of Object.entries(effectCategories)) {
+    const subs = cat.subcategories || [];
+    const total = subs.reduce((s, sub) => s + (sub.herbs?.length || 0), 0);
+    html += `
+      <div class="category-group">
+        <div class="category-header" onclick="toggleCategory(this)">
+          <span>${catName} <span class="count">${total}</span></span>
+          <span class="arrow open">›</span>
+        </div>
+        <div class="subcategories" style="display:block">
+          ${subs.map(sub => `
+            <button class="subcat-btn" data-category="${catName}" data-subcategory="${sub.name}"
+              onclick="filterSubcategory('${catName}', '${sub.name}')">
+              ${sub.name} <span class="count">${sub.herbs.length}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>`;
+  }
+  sidebar.innerHTML = html;
+}
+
+function toggleCategory(el) {
+  const subs = el.nextElementSibling;
+  const arrow = el.querySelector('.arrow');
+  if (subs.style.display === 'none') {
+    subs.style.display = 'block';
+    arrow.classList.add('open');
+  } else {
+    subs.style.display = 'none';
+    arrow.classList.remove('open');
+  }
+}
+
+function filterSubcategory(cat, sub) {
+  state.categoryFilter = cat;
+  state.subcategoryFilter = sub;
+  state.natureFilter = '';
+  document.querySelectorAll('.subcat-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.subcat-btn[data-category="' + cat + '"][data-subcategory="' + sub + '"]')
+    .forEach(b => b.classList.add('active'));
+  document.querySelectorAll('.filter-btn.active').forEach(b => b.classList.remove('active'));
+  applyFilters();
+}
+
+// ============================================================
+// FILTERS
+// ============================================================
+document.getElementById('searchInput').addEventListener('input', function() {
+  state.search = this.value.toLowerCase();
+  document.getElementById('searchClear').classList.toggle('visible', this.value.length > 0);
+  state.categoryFilter = '';
+  state.subcategoryFilter = '';
+  document.querySelectorAll('.subcat-btn.active').forEach(b => b.classList.remove('active'));
+  applyFilters();
+});
+
+document.getElementById('searchClear').addEventListener('click', function() {
+  document.getElementById('searchInput').value = '';
+  state.search = '';
+  this.classList.remove('visible');
+  state.categoryFilter = '';
+  state.subcategoryFilter = '';
+  document.querySelectorAll('.subcat-btn.active').forEach(b => b.classList.remove('active'));
+  applyFilters();
+});
+
+document.querySelectorAll('.filter-btn[data-filter="nature"]').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const val = this.dataset.value;
+    if (state.natureFilter === val) {
+      state.natureFilter = '';
+      this.classList.remove('active');
+    } else {
+      document.querySelectorAll('.filter-btn[data-filter="nature"]').forEach(b => b.classList.remove('active'));
+      state.natureFilter = val;
+      this.classList.add('active');
+    }
+    state.categoryFilter = '';
+    state.subcategoryFilter = '';
+    document.querySelectorAll('.subcat-btn.active').forEach(b => b.classList.remove('active'));
+    applyFilters();
+  });
+});
+
+document.getElementById('resetFilters').addEventListener('click', function() {
+  state.search = '';
+  state.natureFilter = '';
+  state.categoryFilter = '';
+  state.subcategoryFilter = '';
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchClear').classList.remove('visible');
+  document.querySelectorAll('.filter-btn.active').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.subcat-btn.active').forEach(b => b.classList.remove('active'));
+  applyFilters();
+});
+
+// ============================================================
+// APPLY FILTERS
+// ============================================================
+function applyFilters() {
+  let filtered = allHerbs;
+
+  if (state.search) {
+    const q = state.search;
+    filtered = filtered.filter(h =>
+      h.name.includes(q) ||
+      (h.pinyin && h.pinyin.includes(q)) ||
+      (h.latin && h.latin.toLowerCase().includes(q)) ||
+      (h.effect && h.effect.includes(q)) ||
+      (h.indications && h.indications.includes(q)) ||
+      (h.description && h.description.includes(q)) ||
+      (h.category && h.category.includes(q))
+    );
+  }
+
+  if (state.natureFilter) {
+    filtered = filtered.filter(h => h.nature === state.natureFilter);
+  }
+
+  if (state.subcategoryFilter) {
+    filtered = filtered.filter(h => h.subcategory === state.subcategoryFilter);
+  } else if (state.categoryFilter) {
+    const cat = effectCategories[state.categoryFilter];
+    if (cat) {
+      const subHerbs = new Set();
+      cat.subcategories.forEach(sub => sub.herbs.forEach(name => subHerbs.add(name)));
+      filtered = filtered.filter(h => subHerbs.has(h.id || h.name));
+    }
+  }
+
+  state.herbs = filtered;
+  renderGrid();
+}
+
+// ============================================================
+// RENDER GRID
+// ============================================================
+function renderGrid() {
+  const grid = document.getElementById('herbGrid');
+  const stats = document.getElementById('resultsStats');
+  const total = allHerbs.length;
+
+  stats.textContent = `共 ${state.herbs.length} 味（收录 ${total} 味）`;
+
+  if (state.herbs.length === 0) {
+    grid.innerHTML = `
+      <div class="empty-state" style="grid-column:1/-1">
+        <div class="icon">🌿</div>
+        <h3>未找到匹配的草药</h3>
+        <p>试试其他关键词或取消筛选条件</p>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = state.herbs.map((h, i) => {
+    const natureClass = `tag-nature-${h.nature}`;
+    const imgSrc = getImageSrc(h);
+    return `
+      <div class="herb-card" onclick="openDetail('${h.id || h.name}')" style="animation-delay:${(i % 20) * 0.03}s">
+        ${imgSrc
+          ? `<img class="card-img" src="${imgSrc}" alt="${h.name}" loading="lazy" onerror="this.style.display='none';this.parentElement.querySelector('.card-img-placeholder').style.display='flex'">`
+          : `<div class="card-img-placeholder">🌿</div>`
+        }
+        <div class="card-body">
+          <div class="card-name-row">
+            <span class="card-name">${h.name}</span>
+            ${h.pinyin ? `<span class="card-pinyin">${h.pinyin}</span>` : ''}
+          </div>
+          ${h.latin ? `<div class="card-latin">${h.latin}</div>` : ''}
+          <div class="card-tags">
+            <span class="tag tag-nature ${natureClass}">${h.nature}性</span>
+            <span class="tag tag-effect">${h.category || ''}</span>
+          </div>
+          <div class="card-effect">${truncate(h.effect || h.indications || '', 50)}</div>
+          ${h.flavor ? `<div class="card-flavor">味${h.flavor}</div>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function truncate(str, len) {
+  if (!str) return '';
+  return str.length > len ? str.slice(0, len) + '…' : str;
+}
+
+// ============================================================
+// DETAIL MODAL
+// ============================================================
+function openDetail(id) {
+  const herb = allHerbs.find(h => (h.id || h.name) === id);
+  if (!herb) return;
+
+  const overlay = document.getElementById('modalOverlay');
+  const content = document.getElementById('modalContent');
+
+  const natureClass = `nature-${herb.nature}`;
+  const imgSrc = getImageSrc(herb);
+
+  content.innerHTML = `
+    ${imgSrc
+      ? `<img class="modal-img" src="${imgSrc}" alt="${herb.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+      : `<div class="modal-img-placeholder">🌿</div>`
+    }
+    <div class="modal-body">
+      <div class="modal-header">
+        <h2 class="modal-title">${herb.name}</h2>
+        ${herb.pinyin ? `<span class="modal-pinyin">${herb.pinyin}</span>` : ''}
+      </div>
+      ${herb.latin ? `<div class="modal-latin">${herb.latin}</div>` : ''}
+
+      <div class="info-grid">
+        ${herb.nature ? `<div class="info-item"><div class="label">药性</div><div class="value ${natureClass}">${herb.nature}</div></div>` : ''}
+        ${herb.flavor ? `<div class="info-item"><div class="label">五味</div><div class="value">${herb.flavor}</div></div>` : ''}
+        ${herb.meridian ? `<div class="info-item"><div class="label">归经</div><div class="value">${herb.meridian}</div></div>` : ''}
+        ${herb.category ? `<div class="info-item"><div class="label">分类</div><div class="value">${herb.category}</div></div>` : ''}
+        ${herb.subcategory ? `<div class="info-item"><div class="label">子类</div><div class="value">${herb.subcategory}</div></div>` : ''}
+        ${herb.dosage ? `<div class="info-item"><div class="label">用法用量</div><div class="value">${herb.dosage}</div></div>` : ''}
+      </div>
+
+      ${herb.effect ? `
+        <div class="detail-section">
+          <h3>功效主治</h3>
+          <p>${herb.effect}</p>
+          ${herb.indications ? `<p style="margin-top:0.3rem">${herb.indications}</p>` : ''}
+        </div>` : ''}
+
+      ${herb.description ? `
+        <div class="detail-section">
+          <h3>药材介绍</h3>
+          <p>${herb.description}</p>
+        </div>` : ''}
+
+      ${herb.distribution ? `
+        <div class="detail-section">
+          <h3>产地分布</h3>
+          <p>${herb.distribution}</p>
+        </div>` : ''}
+
+      ${herb.harvest ? `
+        <div class="detail-section">
+          <h3>采收加工</h3>
+          <p>${herb.harvest}</p>
+        </div>` : ''}
+
+      ${herb.usage ? `
+        <div class="detail-section">
+          <h3>用法用量</h3>
+          <p>${herb.usage}</p>
+        </div>` : ''}
+
+      ${herb.caution ? `
+        <div class="detail-section">
+          <h3>使用注意</h3>
+          <p>${herb.caution}</p>
+        </div>` : ''}
+
+      ${herb.combination ? `
+        <div class="detail-section">
+          <h3>经典配伍</h3>
+          <ul>${herb.combination.map(c => `<li>${c}</li>`).join('')}</ul>
+        </div>` : ''}
+    </div>
+  `;
+
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDetail() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('modalClose').addEventListener('click', closeDetail);
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeDetail();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeDetail();
+});
+
+// ============================================================
+// HEADER COUNT
+// ============================================================
+// ============================================================
+// BACK TO TOP
+// ============================================================
+const backToTop = document.getElementById('backToTop');
+window.addEventListener('scroll', function() {
+  if (window.scrollY > 400) {
+    backToTop.classList.add('visible');
+  } else {
+    backToTop.classList.remove('visible');
+  }
+});
+backToTop.addEventListener('click', function() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// ============================================================
+// RANDOM HERB
+// ============================================================
+document.getElementById('randomBtn').addEventListener('click', function() {
+  if (allHerbs.length === 0) return;
+  const randomHerb = allHerbs[Math.floor(Math.random() * allHerbs.length)];
+  openDetail(randomHerb.id || randomHerb.name);
+});
+
+// ============================================================
+// KEYBOARD SHORTCUTS
+// ============================================================
+document.addEventListener('keydown', function(e) {
+  // Ctrl+F: focus search
+  if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+    e.preventDefault();
+    document.getElementById('searchInput').focus();
+  }
+  // R: random herb
+  if (!e.ctrlKey && !e.metaKey && !e.altKey && e.key === 'r' &&
+      !document.getElementById('modalOverlay').classList.contains('open')) {
+    if (allHerbs.length > 0) {
+      const randomHerb = allHerbs[Math.floor(Math.random() * allHerbs.length)];
+      openDetail(randomHerb.id || randomHerb.name);
+    }
+  }
+});
+
+// ============================================================
+// IMAGE UTILITY - try SVG first, then PNG/JPG
+// ============================================================
+function herbImageUrl(herb) {
+  if (herb.image) return `images/${herb.image}`;
+  if (herb.id) return `images/${herb.id}.svg`;
+  return '';
+}
+
+// Override image path logic in renderGrid
+function getImageSrc(h) {
+  const candidate = h.image ? `images/${h.image}` : (h.id ? `images/${h.id}.svg` : '');
+  return candidate;
+}
+
+// ============================================================
+// HEADER COUNT
+// ============================================================
+function updateHeaderCount() {
+  document.getElementById('headerCount').textContent = `载录 ${allHerbs.length} 味`;
+}
+
+// ============================================================
+// EMBEDDED FALLBACK DATA
+// ============================================================
+function getEmbeddedCategories() {
+  return {
+    "解表药": { subcategories: [
+      { name: "发散风寒", herbs: ["mahuang","guizhi","zisuye","shengjiang","jingjie","fangfeng","qianghuo","baizhi","xixin","gaoben","cangerzi","xinyi"] },
+      { name: "发散风热", herbs: ["bohe","niubangzi","chantui","sangye","juhua","gegen","chaihu","shengma","manjingzi","dandouchi"] }
+    ]},
+    "清热药": { subcategories: [
+      { name: "清热泻火", herbs: ["shigao","zhimu","lugen","tianhuafen","zhuye","zhizi","xiakucao","juemingzi"] },
+      { name: "清热燥湿", herbs: ["huangqin","huanglian","huangbai","longdancao","qinpi","kushen"] },
+      { name: "清热解毒", herbs: ["jinyinhua","lianqiao","pugongying","zihuadiding","daqingye","banlangen","qingdai","yuxingcao","baijiangcao","shegan","shandougen","mabo","baitouweng","machixian","yadanzi"] },
+      { name: "清热凉血", herbs: ["shengdi","xuanshen","mudanpi","chishao","zicao"] },
+      { name: "清虚热", herbs: ["qinghao","digupi","baiwei"] }
+    ]},
+    "泻下药": { subcategories: [
+      { name: "攻下药", herbs: ["dahuang","mangxiao","fanxieye","luhui"] },
+      { name: "润下药", herbs: ["huomaren","yuliren","songziren"] },
+      { name: "峻下逐水", herbs: ["gan sui","da ji","yuanhua","shanglu","qianniuzi"] }
+    ]},
+    "祛风湿药": { subcategories: [
+      { name: "祛风寒湿", herbs: ["duhuo","weilingxian","chuanwu","qishe","wushaoshe","leigongteng"] },
+      { name: "祛风湿热", herbs: ["qinjiao","fangji","sangzhi","xixiancao","chouwutong","haitongpi","luoshishiteng"] },
+      { name: "祛风湿强筋骨", herbs: ["wujiapi","sangjisheng","gouji"] }
+    ]},
+    "化湿药": { subcategories: [
+      { name: "化湿药", herbs: ["huoxiang","peilan","cangzhu","houpo","sharen","baidoukou","caodoukou"] }
+    ]},
+    "利水渗湿药": { subcategories: [
+      { name: "利水消肿", herbs: ["fuling","yiyiren","zexie","yinchen","zhuling","fangji"] },
+      { name: "利尿通淋", herbs: ["chezian","qianmai","bianshu","haijinsha","huashi","muxiang","dixie","dongkuiguo"] },
+      { name: "利湿退黄", herbs: ["yinchen","jinqiancao","huzhang"] }
+    ]},
+    "温里药": { subcategories: [
+      { name: "温里药", herbs: ["fuzi","ganjiang","rougui","wuzhuyu","xixin","gaoliangjiang","xiaohuixiang","dingxiang"] }
+    ]},
+    "理气药": { subcategories: [
+      { name: "理气药", herbs: ["chenpi","qingpi","zhishi","muxiang","xiangfu","chuanlianzi","wulingzhi","yujin","fo shou"] }
+    ]},
+    "消食药": { subcategories: [
+      { name: "消食药", herbs: ["shanzha","shenqu","maiya","laifuzi","jineijin"] }
+    ]},
+    "止血药": { subcategories: [
+      { name: "凉血止血", herbs: ["xiaoji","daji","diyu","cebaiye","baimaogen"] },
+      { name: "化瘀止血", herbs: ["sanqi","puhuang","danxiang","yujin"] }
+    ]},
+    "活血化瘀药": { subcategories: [
+      { name: "活血止痛", herbs: ["chuanxiong","yanhusuo","jianghuang","yujin","ruxiang","moyao"] },
+      { name: "活血调经", herbs: ["danggui","chuanxiong","tusizi","yimucao","taoren","honghua","niuxi","jixueteng","zhenzhumu"] },
+      { name: "活血疗伤", herbs: ["xuejie","zi ran tong","su mu","gu sui bu"] },
+      { name: "破血消癥", herbs: ["sanleng","ezhu","shuizhi","mangchong","tubiechong"] }
+    ]},
+    "化痰止咳平喘药": { subcategories: [
+      { name: "化痰药", herbs: ["banxia","tiananxing","jiegeng","xuanfuhua","baibu","qianhu","gua lou","beimu","kunbu","haizao"] },
+      { name: "止咳平喘", herbs: ["xingren","baibu","ziwan","kuandonghua","suzi","tinglizi","sangbaipi","luohanguo"] }
+    ]},
+    "安神药": { subcategories: [
+      { name: "重镇安神", herbs: ["zhusha","cili","longgu","zhenzhumu","zishiying"] },
+      { name: "养心安神", herbs: ["suanzaoren","boziren","yuanzhi","hehuangpi","yongxiang"] }
+    ]},
+    "平肝息风药": { subcategories: [
+      { name: "平抑肝阳", herbs: ["shijueming","zhenzhumu","muli","daizheshi"] },
+      { name: "息风止痉", herbs: ["gouteng","tianma","dijiang","quanshen","wugong","bai jiang can"] }
+    ]},
+    "开窍药": { subcategories: [
+      { name: "开窍药", herbs: ["shexiang","bingpian","shichangpu","suhexiang","anshixiang"] }
+    ]},
+    "补虚药": { subcategories: [
+      { name: "补气药", herbs: ["renshen","dangshen","huangqi","baizhu","shanyao","gancao","dazao","fengm i"] },
+      { name: "补阳药", herbs: ["lurong","yinyanghuo","ba ji tian","duzhong","xuduan","buguzhi","yizhiren","tusizi","shadi ji","roucongrong","suoyang"] },
+      { name: "补血药", herbs: ["danggui","shu di huang","he shou wu","baishao","gouqizi","longyanrou"] },
+      { name: "补阴药", herbs: ["beishashen","nanshashen","yuzhu","huangjing","ma zhu","shihu","tiandong","maimendong","gouqizi","sangjisheng","han lian cao"] }
+    ]},
+    "收涩药": { subcategories: [
+      { name: "固表止汗", herbs: ["mahuanggen","fuxiaomai"] },
+      { name: "敛肺涩肠", herbs: ["wumei","wuweizi","yingsuqiao","shiliupi"] },
+      { name: "固精缩尿止带", herbs: ["shanyao","shanzhuyu","qian shi","jin ying zi","wubeizi","hai piao xiao"] }
+    ]},
+    "驱虫药": { subcategories: [
+      { name: "驱虫药", herbs: ["shijunzi","ku lian pi","binglang","leiwan","guan zhong"] }
+    ]},
+    "涌吐药": { subcategories: [
+      { name: "涌吐药", herbs: ["gu di","chang shan"] }
+    ]},
+    "攻毒杀虫止痒药": { subcategories: [
+      { name: "攻毒杀虫止痒药", herbs: ["chuang e","she chuang zi","tu jing pi","da feng zi"] }
+    ]}
+  };
+}
+
+function getEmbeddedHerbs() {
+  return [
+    // ========== 解表药 - 发散风寒 ==========
+    { id:"mahuang", name:"麻黄", pinyin:"Má Huáng", latin:"Ephedra sinica", nature:"温", flavor:"辛、微苦", meridian:"肺、膀胱经", category:"解表药", subcategory:"发散风寒", effect:"发汗解表，宣肺平喘，利水消肿", indications:"用于风寒感冒，胸闷喘咳，风水浮肿", description:"麻黄为麻黄科植物草麻黄、中麻黄或木贼麻黄的干燥草质茎。秋季采割绿色的草质茎，晒干。其性温、味辛微苦，有发汗解表的功效。", distribution:"主产于内蒙古、甘肃、山西、河北、新疆等地", harvest:"秋季采割，晒干，切段生用或蜜炙用", dosage:"2-10g", usage:"煎服，宜先煎。发汗解表宜生用，止咳平喘多蜜炙用", caution:"凡虚汗、虚喘、失眠等忌服。高血压、心脏病患者慎用", combination:["麻黄配桂枝：发汗解表力强，用于风寒表实证","麻黄配杏仁：宣肺平喘，用于风寒束肺之咳喘","麻黄配石膏：清肺泄热平喘，用于肺热喘咳"] },
+    { id:"guizhi", name:"桂枝", pinyin:"Guì Zhī", latin:"Cinnamomum cassia", nature:"温", flavor:"辛、甘", meridian:"心、肺、膀胱经", category:"解表药", subcategory:"发散风寒", effect:"发汗解肌，温通经脉，助阳化气，平冲降逆", indications:"用于风寒感冒，脘腹冷痛，血寒经闭，关节痹痛，痰饮水肿", description:"桂枝为樟科植物肉桂的干燥嫩枝。春、夏季采收，除去叶片，晒干或切片晒干。其性温、味辛甘，善于温通经脉。", distribution:"主产于广西、广东、云南等地", harvest:"春夏季采收嫩枝，晒干或切片晒干", dosage:"3-10g", usage:"煎服", caution:"阴虚火旺、血热妄行者忌用。孕妇慎用", combination:["桂枝配麻黄：增强发汗解表之功","桂枝配白芍：调和营卫，用于风寒表虚证","桂枝配甘草：辛甘化阳，温通心阳"] },
+    { id:"zisuye", name:"紫苏叶", pinyin:"Zǐ Sū Yè", latin:"Perilla frutescens", nature:"温", flavor:"辛", meridian:"肺、脾经", category:"解表药", subcategory:"发散风寒", effect:"解表散寒，行气和胃", indications:"用于风寒感冒，咳嗽呕恶，妊娠呕吐，鱼蟹中毒", description:"紫苏叶为唇形科植物紫苏的干燥叶（或带嫩枝）。夏季枝叶茂盛时采收，除去杂质，晒干。", distribution:"全国各地均产", harvest:"夏季枝叶茂盛时采收，晒干", dosage:"5-10g", usage:"煎服，不宜久煎", caution:"气虚表虚者慎用。紫苏含挥发油，煎煮时间不宜过长", combination:["紫苏配生姜：增强解表散寒和胃之功","紫苏配藿香：化湿和胃，用于湿滞中焦","紫苏配砂仁：理气安胎"] },
+    { id:"shengjiang", name:"生姜", pinyin:"Shēng Jiāng", latin:"Zingiber officinale", nature:"温", flavor:"辛", meridian:"肺、脾、胃经", category:"解表药", subcategory:"发散风寒", effect:"解表散寒，温中止呕，温肺止咳", indications:"用于风寒感冒，胃寒呕吐，寒痰咳嗽", description:"生姜为姜科植物姜的新鲜根茎。秋、冬季采挖，除去须根和泥沙。", distribution:"全国各地均产，以四川、贵州、广东等地为佳", harvest:"秋冬季采挖，除去须根和泥沙", dosage:"3-10g", usage:"煎服，或捣汁冲服", caution:"阴虚内热及热盛者忌用", combination:["生姜配大枣：调和营卫，益气和中","生姜配半夏：降逆止呕","生姜配紫苏：解鱼蟹毒"] },
+    { id:"jingjie", name:"荆芥", pinyin:"Jīng Jiè", latin:"Schizonepeta tenuifolia", nature:"温", flavor:"辛", meridian:"肺、肝经", category:"解表药", subcategory:"发散风寒", effect:"解表散风，透疹消疮", indications:"用于感冒，头痛，麻疹，风疹，疮疡初起", description:"荆芥为唇形科植物荆芥的干燥地上部分。夏、秋季花开到顶部、穗绿时采割，除去杂质，晒干。", distribution:"主产于江苏、浙江、江西、河北等地", harvest:"夏秋季采割，晒干", dosage:"5-10g", usage:"煎服，不宜久煎", caution:"表虚自汗、阴虚头痛者忌服", combination:["荆芥配防风：祛风散寒止痛","荆芥配连翘：散风清热","荆芥穗（荆芥炭）：止血作用更强"] },
+    { id:"fangfeng", name:"防风", pinyin:"Fáng Fēng", latin:"Saposhnikovia divaricata", nature:"温", flavor:"辛、甘", meridian:"膀胱、肝、脾经", category:"解表药", subcategory:"发散风寒", effect:"祛风解表，胜湿止痛，止痉", indications:"用于感冒头痛，风湿痹痛，风疹瘙痒，破伤风", description:"防风为伞形科植物防风的干燥根。春、秋季采挖未抽花茎植株的根，除去须根和泥沙，晒干。", distribution:"主产于东北、内蒙古、河北等地", harvest:"春秋季采挖，晒干", dosage:"5-10g", usage:"煎服", caution:"阴虚火旺者慎用", combination:["防风配荆芥：增强祛风解表之力","防风配羌活：祛风胜湿止痛","防风配白术、黄芪：固表止汗（玉屏风散）"] },
+    { id:"qianghuo", name:"羌活", pinyin:"Qiāng Huó", latin:"Notopterygium incisum", nature:"温", flavor:"辛、苦", meridian:"膀胱、肾经", category:"解表药", subcategory:"发散风寒", effect:"解表散寒，祛风胜湿，止痛", indications:"用于风寒感冒，风寒湿痹，肩背酸痛", description:"羌活为伞形科植物羌活或宽叶羌活的干燥根茎及根。春、秋季采挖，除去须根及泥沙，晒干。", distribution:"主产于四川、甘肃、青海、西藏等地", harvest:"春秋季采挖，晒干", dosage:"3-10g", usage:"煎服", caution:"阴虚火旺者慎用", combination:["羌活配防风、细辛：用于风寒湿痹","羌活配川芎：用于风寒头痛身痛"] },
+    { id:"baizhi", name:"白芷", pinyin:"Bái Zhǐ", latin:"Angelica dahurica", nature:"温", flavor:"辛", meridian:"肺、胃、大肠经", category:"解表药", subcategory:"发散风寒", effect:"解表散寒，祛风止痛，通鼻窍，燥湿止带，消肿排脓", indications:"用于感冒头痛，鼻塞流涕，鼻渊，牙痛，带下证，疮疡肿痛", description:"白芷为伞形科植物白芷或杭白芷的干燥根。夏、秋季间叶黄时采挖，除去须根和泥沙，晒干或低温干燥。", distribution:"主产于浙江、四川、河南、河北等地", harvest:"夏秋季采挖，晒干", dosage:"3-10g", usage:"煎服", caution:"阴虚火旺者慎用", combination:["白芷配川芎、细辛：用于风寒头痛","白芷配苍耳子、辛夷：通鼻窍，用于鼻渊","白芷配贝母、蒲公英：消肿排脓"] },
+    { id:"xixin", name:"细辛", pinyin:"Xì Xīn", latin:"Asarum heterotropoides", nature:"温", flavor:"辛", meridian:"心、肺、肾经", category:"解表药", subcategory:"发散风寒", effect:"解表散寒，祛风止痛，通窍，温肺化饮", indications:"用于风寒感冒，头痛，牙痛，鼻塞流涕，鼻渊，风寒咳喘", description:"细辛为马兜铃科植物北细辛、汉城细辛或华细辛的干燥根和根茎。夏季果熟期或初秋采挖，除去泥沙，阴干。", distribution:"主产于东北、陕西、河南等地", harvest:"夏季或初秋采挖，阴干", dosage:"1-3g", usage:"煎服或入丸散", caution:"不宜与藜芦同用。用量不宜过大，过量易中毒", combination:["细辛配麻黄、附子：助阳解表（麻黄附子细辛汤）","细辛配川芎、白芷：祛风止痛","细辛配干姜、五味子：温肺化饮"] },
+    { id:"gaoben", name:"藁本", pinyin:"Gǎo Běn", latin:"Ligusticum sinense", nature:"温", flavor:"辛", meridian:"膀胱经", category:"解表药", subcategory:"发散风寒", effect:"祛风散寒，除湿止痛", indications:"用于风寒感冒，巅顶头痛", description:"藁本为伞形科植物藁本或辽藁本的干燥根茎及根。秋季茎叶枯萎或次春出苗时采挖，除去泥沙，晒干或烘干。", distribution:"主产于陕西、甘肃、四川、湖北等地", harvest:"秋季采挖，晒干", dosage:"3-10g", usage:"煎服", caution:"阴虚火旺者慎用", combination:["藁本配川芎、白芷：用于风寒感冒头痛","藁本配羌活、防风：祛风胜湿止痛"] },
+    { id:"cangerzi", name:"苍耳子", pinyin:"Cāng Ěr Zǐ", latin:"Xanthium sibiricum", nature:"温", flavor:"辛、苦", meridian:"肺经", category:"解表药", subcategory:"发散风寒", effect:"散风寒，通鼻窍，祛风湿", indications:"用于风寒头痛，鼻塞流涕，鼻渊，风湿痹痛", description:"苍耳子为菊科植物苍耳的干燥成熟带总苞的果实。秋季果实成熟时采收，干燥，除去梗、叶等杂质。", distribution:"全国各地均产", harvest:"秋季果实成熟时采收，晒干", dosage:"3-10g", usage:"煎服", caution:"血虚头痛者慎用。不宜过量服用", combination:["苍耳子配辛夷、白芷：通鼻窍，用于鼻渊","苍耳子配防风、羌活：祛风除湿"] },
+    { id:"xinyi", name:"辛夷", pinyin:"Xīn Yí", latin:"Magnolia biondii", nature:"温", flavor:"辛", meridian:"肺、胃经", category:"解表药", subcategory:"发散风寒", effect:"散风寒，通鼻窍", indications:"用于风寒头痛，鼻塞流涕，鼻渊", description:"辛夷为木兰科植物望春花、玉兰或武当玉兰的干燥花蕾。冬末春初花未开放时采收，除去枝梗，阴干。", distribution:"主产于河南、湖北、四川、陕西等地", harvest:"冬末春初采收花蕾，阴干", dosage:"3-10g", usage:"包煎", caution:"阴虚火旺者慎用", combination:["辛夷配苍耳子、白芷：通鼻窍","辛夷配川芎、防风：散风寒"] },
+
+    // ========== 解表药 - 发散风热 ==========
+    { id:"bohe", name:"薄荷", pinyin:"Bò He", latin:"Mentha haplocalyx", nature:"凉", flavor:"辛", meridian:"肺、肝经", category:"解表药", subcategory:"发散风热", effect:"疏散风热，清利头目，利咽透疹，疏肝行气", indications:"用于风热感冒，头痛目赤，咽喉肿痛，麻疹不透，肝郁气滞", description:"薄荷为唇形科植物薄荷的干燥地上部分。夏、秋季茎叶茂盛或花开至三轮时，选晴天采割，晒干或阴干。", distribution:"全国各地均产，以江苏、浙江为佳", harvest:"夏秋季采割，晒干或阴干", dosage:"3-6g", usage:"煎服，宜后下", caution:"阴虚血燥、肝阳偏亢者忌服", combination:["薄荷配金银花、连翘：疏散风热，用于风热感冒","薄荷配川芎、白芷：清利头目","薄荷配柴胡、白芍：疏肝解郁"] },
+    { id:"niubangzi", name:"牛蒡子", pinyin:"Niú Bàng Zǐ", latin:"Arctium lappa", nature:"寒", flavor:"辛、苦", meridian:"肺、胃经", category:"解表药", subcategory:"发散风热", effect:"疏散风热，宣肺透疹，解毒利咽", indications:"用于风热感冒，咳嗽痰多，麻疹不透，咽喉肿痛，疮痈肿毒", description:"牛蒡子为菊科植物牛蒡的干燥成熟果实。秋季果实成熟时采收果序，晒干，打下果实，除去杂质。", distribution:"全国各地均产", harvest:"秋季果实成熟时采收，晒干", dosage:"6-12g", usage:"煎服。炒用寒性略减", caution:"气虚便溏者慎用", combination:["牛蒡子配金银花、连翘：疏散风热","牛蒡子配桔梗、甘草：利咽止咳","牛蒡子配玄参、黄芩：清热解毒利咽"] },
+    { id:"chantui", name:"蝉蜕", pinyin:"Chán Tuì", latin:"Cryptotympana pustulata", nature:"寒", flavor:"甘", meridian:"肺、肝经", category:"解表药", subcategory:"发散风热", effect:"疏散风热，利咽开音，透疹，明目退翳，息风止痉", indications:"用于风热感冒，咽痛音哑，麻疹不透，目赤翳障，惊风抽搐", description:"蝉蜕为蝉科昆虫黑蚱的若虫羽化时脱落的皮壳。夏、秋季收集，除去泥沙，晒干。", distribution:"主产于山东、河南、江苏、浙江等地", harvest:"夏秋季收集，晒干", dosage:"3-6g", usage:"煎服或研末冲服", caution:"孕妇慎用", combination:["蝉蜕配薄荷、牛蒡子：疏散风热利咽","蝉蜕配菊花、决明子：明目退翳","蝉蜕配全蝎、僵蚕：息风止痉"] },
+    { id:"sangye", name:"桑叶", pinyin:"Sāng Yè", latin:"Morus alba", nature:"寒", flavor:"甘、苦", meridian:"肺、肝经", category:"解表药", subcategory:"发散风热", effect:"疏散风热，清肺润燥，平抑肝阳，清肝明目", indications:"用于风热感冒，肺热燥咳，头晕头痛，目赤昏花", description:"桑叶为桑科植物桑的干燥叶。初霜后采收，除去杂质，晒干。", distribution:"全国各地均产", harvest:"初霜后采收，晒干", dosage:"5-10g", usage:"煎服。蜜炙能增强润肺止咳作用", caution:"虚寒证者慎用", combination:["桑叶配菊花：疏散风热，用于风热感冒","桑叶配杏仁、沙参：清肺润燥","桑叶配决明子、夏枯草：清肝明目"] },
+    { id:"juhua", name:"菊花", pinyin:"Jú Huā", latin:"Chrysanthemum morifolium", nature:"寒", flavor:"甘、苦", meridian:"肺、肝经", category:"解表药", subcategory:"发散风热", effect:"疏散风热，平抑肝阳，清肝明目，清热解毒", indications:"用于风热感冒，头痛眩晕，目赤肿痛，眼目昏花，疮痈肿毒", description:"菊花为菊科植物菊的干燥头状花序。9-11月花盛开时分批采收，阴干或焙干，或熏蒸后晒干。", distribution:"主产于浙江（杭菊）、安徽（滁菊、亳菊）、河南（怀菊）", harvest:"9-11月花盛开时采收", dosage:"5-10g", usage:"煎服", caution:"阳虚或气虚者慎用", combination:["菊花配桑叶：疏散风热","菊花配枸杞、地黄：滋补肝肾明目（杞菊地黄丸）","菊花配石决明、钩藤：平肝潜阳"] },
+    { id:"gegen", name:"葛根", pinyin:"Gě Gēn", latin:"Pueraria lobata", nature:"凉", flavor:"甘、辛", meridian:"脾、胃经", category:"解表药", subcategory:"发散风热", effect:"解肌退热，生津止渴，透疹，升阳止泻，通经活络，解酒毒", indications:"用于外感发热，项背强痛，口渴，麻疹不透，热痢泄泻，高血压", description:"葛根为豆科植物野葛的干燥根。秋、冬季采挖，趁鲜切成厚片或小块，干燥。", distribution:"主产于湖南、河南、广东、浙江等地", harvest:"秋冬季采挖，切片干燥", dosage:"10-15g", usage:"煎服。止泻宜煨用", caution:"胃寒者慎用", combination:["葛根配麻黄、桂枝：解肌发汗","葛根配柴胡、黄芩：解肌清热","葛根配升麻：透发麻疹"] },
+    { id:"chaihu", name:"柴胡", pinyin:"Chái Hú", latin:"Bupleurum chinense", nature:"寒", flavor:"辛、苦", meridian:"肝、胆经", category:"解表药", subcategory:"发散风热", effect:"疏散退热，疏肝解郁，升举阳气", indications:"用于感冒发热，寒热往来，肝郁气滞，胸胁胀痛，气虚下陷", description:"柴胡为伞形科植物柴胡或狭叶柴胡的干燥根。春、秋季采挖，除去茎叶和泥沙，干燥。", distribution:"主产于河北、河南、辽宁、湖北等地", harvest:"春秋季采挖，晒干", dosage:"3-10g", usage:"煎服。解表退热宜生用，疏肝解郁宜醋炙", caution:"阴虚阳亢、肝风内动者慎用", combination:["柴胡配黄芩：和解少阳，用于寒热往来（小柴胡汤）","柴胡配白芍、当归：疏肝解郁（逍遥散）","柴胡配升麻、黄芪：升阳举陷（补中益气汤）"] },
+    { id:"shengma", name:"升麻", pinyin:"Shēng Má", latin:"Cimicifuga foetida", nature:"寒", flavor:"辛、苦", meridian:"肺、脾、胃、大肠经", category:"解表药", subcategory:"发散风热", effect:"发表透疹，清热解毒，升举阳气", indications:"用于风热感冒，麻疹不透，咽喉肿痛，气虚下陷，久泻脱肛", description:"升麻为毛茛科植物大三叶升麻、兴安升麻或升麻的干燥根茎。秋季采挖，除去泥沙，晒干。", distribution:"主产于辽宁、黑龙江、河北、四川等地", harvest:"秋季采挖，晒干", dosage:"3-10g", usage:"煎服。升阳举陷宜炙用", caution:"阴虚火旺、麻疹已透者忌用", combination:["升麻配葛根：透疹解毒","升麻配柴胡、黄芪：升阳举陷","升麻配黄连、石膏：清胃解毒"] },
+    { id:"manjingzi", name:"蔓荆子", pinyin:"Màn Jīng Zǐ", latin:"Vitex trifolia", nature:"凉", flavor:"辛、苦", meridian:"膀胱、肝、胃经", category:"解表药", subcategory:"发散风热", effect:"疏散风热，清利头目", indications:"用于风热感冒头痛，目赤肿痛，头晕目眩", description:"蔓荆子为马鞭草科植物单叶蔓荆或蔓荆的干燥成熟果实。秋季果实成熟时采收，除去杂质，晒干。", distribution:"主产于山东、江西、浙江等地", harvest:"秋季果实成熟时采收，晒干", dosage:"5-10g", usage:"煎服", caution:"阴虚血亏者慎用", combination:["蔓荆子配菊花、薄荷：疏散风热明目","蔓荆子配川芎、白芷：祛风止痛"] },
+    { id:"dandouchi", name:"淡豆豉", pinyin:"Dàn Dòu Chǐ", latin:"Glycine max (fermented)", nature:"凉", flavor:"辛、甘、微苦", meridian:"肺、胃经", category:"解表药", subcategory:"发散风热", effect:"解表除烦，宣发郁热", indications:"用于感冒，寒热头痛，心烦郁闷", description:"淡豆豉为豆科植物大豆的成熟种子的发酵加工品。以桑叶、青蒿等为发酵辅料。", distribution:"全国各地均产", harvest:"随用随制", dosage:"6-12g", usage:"煎服", caution:"胃虚者慎用", combination:["淡豆豉配葱白：通阳发汗（葱豉汤）","淡豆豉配栀子：清热除烦（栀子豉汤）","淡豆豉配金银花、连翘：疏散风热"] }
+  ];
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', loadData);
+</script>
+</body>
+</html>

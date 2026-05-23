@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 340" width="400" height="340">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFF5F0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f5ebe6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="groundGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#8A3A2A;stop-opacity:0.08" />
+      <stop offset="100%" style="stop-color:#8A3A2A;stop-opacity:0.02" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="340" fill="url(#bgGrad)" rx="4"/>
+
+  <!-- Decorative border -->
+  <rect x="8" y="8" width="384" height="324" fill="none" stroke="#8A3A2A" stroke-width="0.5" rx="2" opacity="0.2"/>
+
+  <!-- Ground line -->
+  <path d="M50,270 Q100,265 200,268 Q300,271 350,267" stroke="#8A3A2A" stroke-width="0.8" fill="none" opacity="0.2"/>
+
+  <!-- Plant illustration -->
+  <g transform="translate(200,260)">
+    <path d="M0,0 L0,-50" stroke="#5A7A4A" stroke-width="2.5" fill="none"/>
+    <circle cx="0" cy="-75" r="18" fill="#C45A3A" opacity="0.8"/>
+    <circle cx="0" cy="-75" r="14" fill="#C45A3A" opacity="0.6"/>
+    <path d="M0,-93 C-3,-95 3,-95 0,-93" fill="#5A7A4A"/>
+    <ellipse cx="-8" cy="-35" rx="10" ry="5" fill="#6A8A5A" opacity="0.7" transform="rotate(-20,-8,-35)"/>
+    <ellipse cx="8" cy="-35" rx="10" ry="5" fill="#6A8A5A" opacity="0.7" transform="rotate(20,8,-35)"/>
+    <ellipse cx="0" cy="-35" rx="10" ry="5" fill="#6A8A5A" opacity="0.7"/>
+  </g>
+
+  <!-- Chinese seal (stamp) decoration -->
+  <g transform="translate(320,50)">
+    <rect x="-22" y="-22" width="44" height="44" fill="none" stroke="#C45A3A" stroke-width="1.5" rx="3" opacity="0.3"/>
+    <text x="0" y="5" text-anchor="middle" font-family="'Noto Serif SC','SimSun',serif" font-size="11" fill="#C45A3A" opacity="0.4">本草</text>
+  </g>
+
+  <!-- Floating decorative dots -->
+  <circle cx="50" cy="60" r="2" fill="#C45A3A" opacity="0.08"/>
+  <circle cx="350" cy="120" r="1.5" fill="#6A8A5A" opacity="0.08"/>
+  <circle cx="60" cy="180" r="2.5" fill="#C45A3A" opacity="0.06"/>
+  <circle cx="340" cy="200" r="1.5" fill="#6A8A5A" opacity="0.07"/>
+
+  <!-- Text label at bottom -->
+  <text x="200" y="310" text-anchor="middle" font-family="'Noto Serif SC','SimSun',serif" font-size="18" font-weight="700" fill="#8A3A2A" opacity="0.8">覆盆子</text>
+  <text x="200" y="328" text-anchor="middle" font-family="Georgia,serif" font-size="8" fill="#8A3A2A" opacity="0.4" font-style="italic">Rubus chingii Hu</text>
+
+  <!-- Nature/Flavor tag -->
+  <text x="200" y="22" text-anchor="middle" font-family="'Noto Serif SC','SimSun',serif" font-size="9" fill="#8A3A2A" opacity="0.35">温性 · 甘、酸</text>
+</svg>

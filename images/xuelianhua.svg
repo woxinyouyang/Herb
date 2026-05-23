@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 340" width="400" height="340">
+  <defs>
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#E8F0E8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F5F0E8;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Sky background -->
+  <rect width="400" height="340" fill="url(#skyGrad)"/>
+
+  <!-- Scene background -->
+  <g opacity="0.16">
+      <!-- 崖壁 -->
+      <path d="M0,180 L40,160 L80,185 L120,155 L160,175 L200,150 L240,170 L280,148 L320,168 L360,145 L400,165 L400,260 Q300,255 200,258 Q100,262 0,258 Z" fill="#B0C0C8" opacity="0.5"/>
+      <path d="M0,200 Q100,195 200,202 Q300,196 400,200 L400,340 L0,340 Z" fill="#8A9A9A" opacity="0.4"/>
+      <!-- 崖壁纹理 -->
+      <path d="M40,170 L40,200 M120,165 L120,195 M200,158 L200,190 M280,155 L280,188 M360,152 L360,185" stroke="#A0B0B8" stroke-width="0.3" fill="none" opacity="0.3"/>
+      <!-- 远云 -->
+      <ellipse cx="80" cy="190" rx="50" ry="8" fill="white" opacity="0.04"/>
+      <ellipse cx="300" cy="175" rx="70" ry="10" fill="white" opacity="0.03"/>
+    </g>
+
+  <!-- Scene extras -->
+  <g opacity="0.06">
+      <circle cx="50" cy="185" r="1.5" fill="white"/>
+      <circle cx="350" cy="170" r="1" fill="white"/>
+    </g>
+
+  <!-- Plant (foreground) -->
+  <g transform="translate(200,260)">
+    <!-- 苞叶（雪莲特征 - 多层苞叶） -->
+    <path d="M0,-10 Q-25,-30 -20,-50 Q-15,-65 0,-70 Q15,-65 20,-50 Q25,-30 0,-10 Z" fill="#D0E0E8" opacity="0.4"/>
+    <path d="M0,-15 Q-20,-35 -18,-52 Q-14,-65 0,-68 Q14,-65 18,-52 Q20,-35 0,-15 Z" fill="#E0E8F0" opacity="0.35"/>
+    <!-- 头状花序 -->
+    <circle cx="0" cy="-50" r="12" fill="#A0B8C8" opacity="0.5"/>
+    <circle cx="0" cy="-50" r="8" fill="#B8C8D8" opacity="0.4"/>
+    <!-- 雪花点 -->
+    <circle cx="-5" cy="-55" r="1" fill="white" opacity="0.6"/>
+    <circle cx="4" cy="-48" r="1" fill="white" opacity="0.5"/>
+    <circle cx="-2" cy="-52" r="0.8" fill="white" opacity="0.4"/>
+    <circle cx="6" cy="-53" r="0.8" fill="white" opacity="0.4"/>
+    <!-- 叶（地面莲座状） -->
+    <path d="M-8,0 Q-20,5 -22,-5 Q-20,-10 -8,-5" fill="#7A9A7A" opacity="0.4"/>
+    <path d="M8,0 Q20,5 22,-5 Q20,-10 8,-5" fill="#7A9A7A" opacity="0.4"/>
+  </g>
+
+  <!-- Ground cover -->
+  <path d="M0,258 Q100,256 200,260 Q300,255 400,258 L400,265 L0,265 Z" fill="#8A9A9A" opacity="0.08"/>
+
+  <!-- Chinese seal stamp -->
+  <g transform="translate(330,50)">
+    <rect x="-18" y="-18" width="36" height="36" fill="none" stroke="#A0B0C0" stroke-width="1.2" rx="2" opacity="0.25"/>
+    <text x="0" y="4" text-anchor="middle" font-family="'Noto Serif SC','SimSun',serif" font-size="9" fill="#A0B0C0" opacity="0.3">药</text>
+  </g>
+
+  <!-- Decorative elements -->
+  <circle cx="40" cy="50" r="2" fill="#A0B0C0" opacity="0.06"/>
+  <circle cx="360" cy="130" r="1.5" fill="#A0B0C0" opacity="0.05"/>
+
+  <!-- Title -->
+  <text x="200" y="312" text-anchor="middle" font-family="'Noto Serif SC','SimSun',serif" font-size="16" font-weight="700" fill="#A0B0C0" opacity="0.75">雪莲花</text>
+  <text x="200" y="328" text-anchor="middle" font-family="Georgia,serif" font-size="7" font-style="italic" fill="#A0B0C0" opacity="0.35">Saussureae Involucratae Herba</text>
+  <text x="200" y="20" text-anchor="middle" font-family="'Noto Serif SC','SimSun',serif" font-size="8" fill="#A0B0C0" opacity="0.25">雪莲 · 雪线</text>
+</svg>

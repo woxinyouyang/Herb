@@ -1,0 +1,19 @@
+{
+  "appId": "com.herb.directory",
+  "appName": "草药名录",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https",
+    "cleartext": true,
+    "allowNavigation": []
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1000,
+      "backgroundColor": "#F5F0E8",
+      "androidSplashResourceName": "splash",
+      "showSpinner": false
+    }
+  }
+}
