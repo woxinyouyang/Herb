@@ -10,7 +10,7 @@ const parentDir = path.resolve(__dirname, '..');
 // Files to copy from parent
 const FILES = ['index.html', 'manifest.json', 'herbs.json', 'icon-192.png', 'icon-512.png'];
 
-// Directories to copy from parent
+// Directories to copy from parent (includes .webp files)
 const DIRS = ['images'];
 
 function copyRecursive(src, dest) {

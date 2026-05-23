@@ -1221,7 +1221,7 @@ function renderGrid() {
     return `
       <div class="herb-card" onclick="openDetail('${h.id || h.name}')" style="animation-delay:${(i % 20) * 0.03}s">
         ${imgSrc
-          ? `<img class="card-img" src="${imgSrc}" alt="${h.name}" loading="lazy" onerror="this.style.display='none';this.parentElement.querySelector('.card-img-placeholder').style.display='flex'">`
+          ? `<img class="card-img" src="${imgSrc}" alt="${h.name}" loading="lazy" onerror="webpFallback(this)">`
           : `<div class="card-img-placeholder">🌿</div>`
         }
         <div class="card-body">
@@ -1261,7 +1261,7 @@ function openDetail(id) {
 
   content.innerHTML = `
     ${imgSrc
-      ? `<img class="modal-img" src="${imgSrc}" alt="${herb.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+      ? `<img class="modal-img" src="${imgSrc}" alt="${herb.name}" onerror="webpFallback(this)">`
       : `<div class="modal-img-placeholder">🌿</div>`
     }
     <div class="modal-body">
@@ -1470,18 +1470,43 @@ document.addEventListener('keydown', function(e) {
 });
 
 // ============================================================
-// IMAGE UTILITY - try SVG first, then PNG/JPG
+// IMAGE FALLBACK - WebP → PNG → placeholder
+// ============================================================
+function webpFallback(img) {
+  const src = img.getAttribute('src') || '';
+  const pngSrc = src.replace(/\.webp$/i, '.png');
+  if (src.endsWith('.webp') && pngSrc !== src) {
+    // Try PNG fallback
+    img.setAttribute('src', pngSrc);
+    img.setAttribute('onerror', "this.style.display='none';const p=this.parentElement;const ph=p.querySelector('.card-img-placeholder, .modal-img-placeholder');if(ph)ph.style.display='flex'");
+  } else {
+    img.style.display = 'none';
+    const p = img.parentElement;
+    const ph = p.querySelector('.card-img-placeholder, .modal-img-placeholder');
+    if (ph) ph.style.display = 'flex';
+  }
+}
+
+// ============================================================
+// IMAGE UTILITY - prefer WebP, fallback to PNG/SVG
 // ============================================================
 function herbImageUrl(herb) {
-  if (herb.image) return `images/${herb.image}`;
-  if (herb.id) return `images/${herb.id}.svg`;
+  if (herb.image) {
+    const base = herb.image.replace(/\.(png|jpg|jpeg)$/i, '');
+    return `images/${base}.webp`;
+  }
+  if (herb.id) return `images/${herb.id}.webp`;
   return '';
 }
 
 // Override image path logic in renderGrid
 function getImageSrc(h) {
-  const candidate = h.image ? `images/${h.image}` : (h.id ? `images/${h.id}.svg` : '');
-  return candidate;
+  if (h.image) {
+    const base = h.image.replace(/\.(png|jpg|jpeg)$/i, '');
+    return `images/${base}.webp`;
+  }
+  if (h.id) return `images/${h.id}.webp`;
+  return '';
 }
 
 // ============================================================

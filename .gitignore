@@ -13,6 +13,9 @@ mobile/android/local.properties
 # Windows
 Thumbs.db
 
+# Images - PNG sources (WebP is the primary format)
+images/*.png
+
 # Generated
 mobile/www/
 *.pyc
