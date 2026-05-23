@@ -12,13 +12,15 @@
 <style>
 /* ========== RESET & BASE ========== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; font-size: 16px; }
+html { scroll-behavior: smooth; font-size: 16px; overflow-x: hidden; }
 body {
   font-family: 'Noto Serif SC', 'SimSun', 'STSong', 'Source Han Serif SC', serif;
   background: #F5F0E8;
   color: #3C2415;
   line-height: 1.7;
   min-height: 100vh;
+  overflow-x: hidden;
+  width: 100%;
 }
 a { color: #8B1A1A; text-decoration: none; }
 a:hover { color: #C41E3A; }
@@ -776,26 +778,28 @@ body::before {
   }
 
   /* ---- Search ---- */
-  .search-section { padding: 0.6rem 0.8rem; }
+  .search-wrapper { gap: 0.3rem; }
+  .search-section { padding: 0.5rem 0.6rem; }
+  .search-box { flex: 1; min-width: 0; }
   .search-box input {
-    padding: 0.65rem 1rem 0.65rem 2.2rem;
-    font-size: 16px; /* prevent iOS zoom on focus */
+    padding: 0.65rem 2rem 0.65rem 2rem;
+    font-size: 16px;
     border-radius: 10px;
   }
-  .search-box .icon { left: 0.7rem; font-size: 0.9rem; }
+  .search-box .icon { left: 0.6rem; font-size: 0.85rem; }
+  .search-clear { right: 0.3rem; padding: 0.4rem; }
 
   /* ---- Filters: horizontal scroll --- */
   .filters {
     flex-wrap: nowrap;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x mandatory;
-    gap: 0.5rem;
-    padding: 0.3rem 0 0.5rem;
+    gap: 0.4rem;
+    padding: 0.2rem 0 0.4rem;
     justify-content: flex-start;
   }
   .filters::-webkit-scrollbar { display: none; }
-  .filter-group { flex-shrink: 0; scroll-snap-align: start; }
+  .filter-group { flex-shrink: 0; }
   .filter-label { font-size: 0.7rem; }
   .filter-btn {
     padding: 0.4rem 0.8rem;
